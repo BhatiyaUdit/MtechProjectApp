@@ -16,7 +16,7 @@ uploads_dir = "./uploads"
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-st.set_page_config(page_title="YOLO Inference App")
+st.set_page_config(page_title="Weed Detection App")
 
 if not os.path.exists(predictions_dir):
     os.makedirs(predictions_dir)
@@ -34,7 +34,7 @@ print(yolo_model.info())
 print(unet_model)
 
 if __name__ == "__main__":
-    st.title("Crop Or Weed YOLO")
+    st.title("Crop Or Weed Detection App")
 
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
     print(uploaded_file)
