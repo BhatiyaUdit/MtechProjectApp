@@ -47,3 +47,10 @@ jobs:
             495599776933.dkr.ecr.us-east-1.amazonaws.com/mtech-weed-detection:latest
             495599776933.dkr.ecr.us-east-1.amazonaws.com/mtech-weed-detection:${{ github.sha }}
 
+      - name: Deploy to AWS CloudFormation
+        uses: aws-actions/aws-cloudformation-github-deploy@v1
+        with:
+          name: mlops-fargate
+          template: ./cloudformation/ecs-service.yml
+          no-fail-on-empty-changeset: "1"
+

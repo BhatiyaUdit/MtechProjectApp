@@ -1,0 +1,57 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description:
+  AWS Fargate Mtech Project App
+Parameters:
+  EcsClusterName:
+    Type: String
+    Default: mtech-weed-detection-cluster
+
+Resources:
+  FargateDemoCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Ref EcsClusterName
+
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:  mtech-weed-detection-task
+      Cpu: 1024
+      Memory: 4096
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      ExecutionRoleArn: "arn:aws:iam::495599776933:role/ecs-task-role"
+      TaskRoleArn: "arn:aws:iam::495599776933:role/ecs-task-role"
+      ContainerDefinitions:
+        - Name: "mtech-weed-detection"
+          Cpu: 1024
+          Memory: 4096
+          Image: "495599776933.dkr.ecr.us-east-1.amazonaws.com/mtech-weed-detection:latest"
+          LinuxParameters:
+            InitProcessEnabled: true
+          PortMappings:
+            - ContainerPort: 8501
+
+  Service:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName: mtech-weed-detection-service
+      Cluster: !Ref EcsClusterName
+      LaunchType: FARGATE
+      PlatformVersion: LATEST
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 75
+      DesiredCount: 1
+      EnableExecuteCommand: true
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups:
+            - "sg-0e11614ac5519e71c"
+          Subnets:
+            - "subnet-0a7206599aaa96e7f"
+            - "subnet-013c9cc32e24881bb"
+      TaskDefinition: !Ref TaskDefinition
+
