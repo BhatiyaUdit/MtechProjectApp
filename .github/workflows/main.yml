@@ -28,3 +28,22 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Get commit hash
+        id: get-commit-hash
+        run: echo "::set-output name=commit-hash::$(git rev-parse --short HEAD)"
+
+      - name: Create ECR Repository
+        uses: int128/create-ecr-repository-action@v1
+        with:
+          repository: "mtech-weed-detection"
+
+      - name: Push Docker image to ECR
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: |
+            495599776933.dkr.ecr.us-east-1.amazonaws.com/mtech-weed-detection:latest
+            495599776933.dkr.ecr.us-east-1.amazonaws.com/mtech-weed-detection:${{ github.sha }}
+
