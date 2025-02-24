@@ -8,6 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          lfs: true
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
@@ -38,14 +40,14 @@ jobs:
         with:
           repository: "mtech-weed-detection"
 
-#      - name: Push Docker image to ECR
-#        uses: docker/build-push-action@v2
-#        with:
-#          context: .
-#          push: true
-#          tags: |
-#            495599776933.dkr.ecr.us-east-1.amazonaws.com/mtech-weed-detection:latest
-#            495599776933.dkr.ecr.us-east-1.amazonaws.com/mtech-weed-detection:${{ github.sha }}
+      - name: Push Docker image to ECR
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: |
+            495599776933.dkr.ecr.us-east-1.amazonaws.com/mtech-weed-detection:latest
+            495599776933.dkr.ecr.us-east-1.amazonaws.com/mtech-weed-detection:${{ github.sha }}
 
       - name: Deploy to AWS CloudFormation
         uses: aws-actions/aws-cloudformation-github-deploy@v1
