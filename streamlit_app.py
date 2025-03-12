@@ -60,6 +60,6 @@ if __name__ == "__main__":
             st.image(unet_predictions, caption='Predicted Mask', use_container_width=False, channels='GRAY')
             st.image(predicted_image, caption='Predicted Boxes', use_container_width=True)
 
-        updated_preds = adjust_yolo_confidence(boxes, unet_predictions, original_size=[image.shape[1], image.shape[0]])
-        merged_image = plot_updated_boxes(temp_image_path, updated_preds, yolo_model.names, original_size=[image.shape[1], image.shape[0]])
+        updated_preds = adjust_yolo_confidence(boxes, unet_predictions, original_size=[image.shape[0], image.shape[1]])
+        merged_image = plot_updated_boxes(temp_image_path, updated_preds, yolo_model.names, original_size=[image.shape[0], image.shape[1]])
         st.image(merged_image, caption='Boosted Prediction', use_container_width=True)
