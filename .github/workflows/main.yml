@@ -1,7 +1,7 @@
 name: Deploy Weed Detection App
 on:
   push:
-    branches: [ main1 ] # TODO Change branch
+    branches: [ main ] # TODO Change branch
 
 jobs:
   deploy:
