@@ -7,10 +7,11 @@ from ultralytics import YOLO
 
 from make_prediction import make_prediction_yolo, make_prediction_unet
 from unet_model import UNet
-from visualize import plot_yolo_boxes
+from visualize import plot_yolo_boxes, plot_updated_boxes
+from merge_predictions import adjust_yolo_confidence
 
-yolo_model_path = "./models/CropOrWeedYOLO.pt"
-unet_model_path = "./models/CropOrWeedUnet.pth"
+yolo_model_path = "./models/best after 73 epochs.pt"
+unet_model_path = "./models/checkpoint_epoch_20.pth"
 predictions_dir = "./predictions"
 uploads_dir = "./uploads"
 
@@ -45,22 +46,20 @@ if __name__ == "__main__":
 
         image = cv2.imread(temp_image_path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        image = cv2.resize(image, (256, 256))
-        st.image(image, caption='Original Image')
-
-        col2, col3 = st.columns([1, 1])
 
         unet_predictions = make_prediction_unet(unet_model, temp_image_path)
-        with col2:
-            st.image(unet_predictions, caption='Predicted Mask', use_container_width=True, channels='GRAY')
-
         output_path = os.path.join(predictions_dir, "mask" + uploaded_file.name)
         cv2.imwrite(output_path, unet_predictions)
 
         boxes = make_prediction_yolo(yolo_model, temp_image_path)
         predicted_image = plot_yolo_boxes(temp_image_path, boxes, yolo_model.names)
-        with col3:
-            st.image(predicted_image, caption='Predicted Boxes', use_container_width=True)
-
         output_path = os.path.join(predictions_dir, "yolo" + uploaded_file.name)
         cv2.imwrite(output_path, predicted_image)
+
+        with st.expander("Show/Hide Intermediate results"):
+            st.image(unet_predictions, caption='Predicted Mask', use_container_width=False, channels='GRAY')
+            st.image(predicted_image, caption='Predicted Boxes', use_container_width=True)
+
+        updated_preds = adjust_yolo_confidence(boxes, unet_predictions, original_size=[image.shape[1], image.shape[0]])
+        merged_image = plot_updated_boxes(temp_image_path, updated_preds, yolo_model.names, original_size=[image.shape[1], image.shape[0]])
+        st.image(merged_image, caption='Boosted Prediction', use_container_width=True)
